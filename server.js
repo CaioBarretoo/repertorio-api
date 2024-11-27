@@ -3,6 +3,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const fs = require('fs'); // Para manipular arquivos
+const { exec } = require('child_process'); // Para executar comandos no terminal
+
 
 const app = express();
 const port = 3000; // Porta da API
@@ -25,10 +27,26 @@ const carregarDados = () => {
   }
 };
 
-// Função para salvar os dados no arquivo JSON
+// Função para salvar os dados no arquivo JSON e enviá-los ao GitHub
 const salvarDados = () => {
   fs.writeFileSync(dataFilePath, JSON.stringify(repertorio, null, 2));
-  console.log('Dados salvos com sucesso!');
+  console.log('Dados salvos com sucesso no arquivo JSON!');
+
+  // Adicionando mudanças ao Git e enviando ao GitHub
+  exec(
+    `git add ${dataFilePath} && git commit -m "Atualizando repertório via API" && git push`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Erro ao executar comandos Git: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`Erro no Git: ${stderr}`);
+        return;
+      }
+      console.log(`Mudanças enviadas para o GitHub:\n${stdout}`);
+    }
+  );
 };
 
 // Carregar os dados ao iniciar o servidor
