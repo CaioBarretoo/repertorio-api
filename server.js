@@ -5,10 +5,18 @@ const morgan = require('morgan');
 const fs = require('fs'); // Para manipular arquivos
 const { exec } = require('child_process'); // Para executar comandos no terminal
 
+// Carregar variáveis de ambiente (opcional, para testes locais)
+require('dotenv').config();
 
 const app = express();
 const port = 3000; // Porta da API
 const dataFilePath = './repertorio.json'; // Caminho do arquivo para salvar os dados
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // Token do GitHub do ambiente
+
+if (!GITHUB_TOKEN) {
+  console.error('Erro: GITHUB_TOKEN não definido. Verifique as variáveis de ambiente.');
+  process.exit(1); // Encerrar o servidor se o token não estiver configurado
+}
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -27,47 +35,61 @@ const carregarDados = () => {
   }
 };
 
+// Função para salvar os dados no arquivo JSON e enviar para o GitHub
 const salvarDados = () => {
   // Salvar os dados no arquivo JSON
   fs.writeFileSync(dataFilePath, JSON.stringify(repertorio, null, 2));
   console.log('Dados salvos com sucesso no arquivo JSON!');
 
-  // Configurar o repositório remoto com o token do GitHub
-  exec(
-    `git remote set-url origin https://${process.env.GITHUB_TOKEN}@github.com/CaioBarretoo/repertorio-api.git`,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Erro ao configurar o repositório remoto: ${error.message}`);
-        return;
-      }
-
-      console.log('Repositório remoto configurado com sucesso!');
-
-      // Configurar nome e e-mail do Git, e realizar o commit e push
+  // Garantir que o repositório Git está configurado
+  exec('git rev-parse --is-inside-work-tree', (error) => {
+    if (error) {
+      console.log('Repositório Git não encontrado. Inicializando...');
       exec(
         `
-        git config user.name "CaioBarretoo" &&
-        git config user.email "caio.barret@hotmail.com" &&
-        git add ${dataFilePath} &&
-        git commit -m "Atualizando repertório via API" &&
-        git push
+        git init &&
+        git remote add origin https://${GITHUB_TOKEN}@github.com/CaioBarretoo/repertorio-api.git
         `,
-        (error, stdout, stderr) => {
-          if (error) {
-            console.error(`Erro ao executar comandos Git: ${error.message}`);
-            return;
+        (initError, stdout, stderr) => {
+          if (initError) {
+            console.error(`Erro ao inicializar o repositório Git: ${initError.message}`);
+          } else {
+            console.log('Repositório Git inicializado e remoto configurado com sucesso!');
+            realizarPush(); // Realizar o push após configurar o Git
           }
-          if (stderr) {
-            console.error(`Erro no Git: ${stderr}`);
-            return;
-          }
-          console.log(`Mudanças enviadas para o GitHub:\n${stdout}`);
         }
       );
+    } else {
+      console.log('Repositório Git já inicializado.');
+      realizarPush(); // Realizar o push diretamente
+    }
+  });
+};
+
+// Função para realizar o commit e push no repositório Git
+const realizarPush = () => {
+  exec(
+    `
+    git pull origin main --rebase || echo "Nenhuma atualização para sincronizar" &&
+    git config user.name "CaioBarretoo" &&
+    git config user.email "caio.barret@hotmail.com" &&
+    git add ${dataFilePath} &&
+    git commit -m "Atualizando repertório via API" &&
+    git push https://${GITHUB_TOKEN}@github.com/CaioBarretoo/repertorio-api.git main
+    `,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Erro ao executar comandos Git: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`Erro no Git: ${stderr}`);
+        return;
+      }
+      console.log(`Mudanças enviadas para o GitHub:\n${stdout}`);
     }
   );
 };
-
 
 // Carregar os dados ao iniciar o servidor
 carregarDados();
