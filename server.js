@@ -5,9 +5,6 @@ const morgan = require('morgan');
 const fs = require('fs'); // Para manipular arquivos
 const { exec } = require('child_process'); // Para executar comandos no terminal
 
-// Carregar variáveis de ambiente (opcional, para testes locais)
-require('dotenv').config();
-
 const app = express();
 const port = 3000; // Porta da API
 const dataFilePath = './repertorio.json'; // Caminho do arquivo para salvar os dados
