@@ -94,6 +94,7 @@ const realizarPush = () => {
     git config user.name "CaioBarretoo" &&
     git config user.email "caio.barret@hotmail.com" &&
     git add ${dataFilePath} && 
+    git status &&  // Verificando o status do git
     git commit -m "Atualizando repertório via API" &&
     git push https://${GITHUB_TOKEN}@github.com/CaioBarretoo/repertorio-api.git main
     `,
