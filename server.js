@@ -67,6 +67,8 @@ const salvarDados = () => {
 const realizarPush = () => {
   exec(
     `
+    git add ${dataFilePath} && 
+    git commit -m "Preparando alterações locais para pull" || echo "Nenhuma alteração local para commit" &&
     git pull origin main --rebase || echo "Nenhuma atualização para sincronizar" &&
     git config user.name "CaioBarretoo" &&
     git config user.email "caio.barret@hotmail.com" &&
