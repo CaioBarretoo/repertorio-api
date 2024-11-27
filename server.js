@@ -27,27 +27,47 @@ const carregarDados = () => {
   }
 };
 
-// Função para salvar os dados no arquivo JSON e enviá-los ao GitHub
 const salvarDados = () => {
+  // Salvar os dados no arquivo JSON
   fs.writeFileSync(dataFilePath, JSON.stringify(repertorio, null, 2));
   console.log('Dados salvos com sucesso no arquivo JSON!');
 
-  // Adicionando mudanças ao Git e enviando ao GitHub
+  // Configurar o repositório remoto com o token do GitHub
   exec(
-    `git add ${dataFilePath} && git commit -m "Atualizando repertório via API" && git push`,
+    `git remote set-url origin https://${process.env.GITHUB_TOKEN}@github.com/CaioBarretoo/seu-repositorio.git`,
     (error, stdout, stderr) => {
       if (error) {
-        console.error(`Erro ao executar comandos Git: ${error.message}`);
+        console.error(`Erro ao configurar o repositório remoto: ${error.message}`);
         return;
       }
-      if (stderr) {
-        console.error(`Erro no Git: ${stderr}`);
-        return;
-      }
-      console.log(`Mudanças enviadas para o GitHub:\n${stdout}`);
+
+      console.log('Repositório remoto configurado com sucesso!');
+
+      // Configurar nome e e-mail do Git, e realizar o commit e push
+      exec(
+        `
+        git config user.name "CaioBarretoo" &&
+        git config user.email "caio.barret@hotmail.com" &&
+        git add ${dataFilePath} &&
+        git commit -m "Atualizando repertório via API" &&
+        git push
+        `,
+        (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Erro ao executar comandos Git: ${error.message}`);
+            return;
+          }
+          if (stderr) {
+            console.error(`Erro no Git: ${stderr}`);
+            return;
+          }
+          console.log(`Mudanças enviadas para o GitHub:\n${stdout}`);
+        }
+      );
     }
   );
 };
+
 
 // Carregar os dados ao iniciar o servidor
 carregarDados();
