@@ -34,7 +34,7 @@ const salvarDados = () => {
 
   // Configurar o repositório remoto com o token do GitHub
   exec(
-    `git remote set-url origin https://${process.env.GITHUB_TOKEN}@github.com/CaioBarretoo/seu-repositorio.git`,
+    `git remote set-url origin https://${process.env.GITHUB_TOKEN}@github.com/CaioBarretoo/repertorio-api.git`,
     (error, stdout, stderr) => {
       if (error) {
         console.error(`Erro ao configurar o repositório remoto: ${error.message}`);
