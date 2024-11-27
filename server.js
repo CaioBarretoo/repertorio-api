@@ -94,11 +94,6 @@ const realizarPush = () => {
     git config user.name "CaioBarretoo" &&
     git config user.email "caio.barret@hotmail.com" &&
     git add ${dataFilePath} && 
-    git commit -m "Preparando alterações locais para pull" || echo "Nenhuma alteração local para commit" &&
-    git stash save --include-untracked "Backup antes do pull" || echo "Nada para salvar no stash" &&
-    git pull origin main --rebase || echo "Nenhuma atualização para sincronizar" &&
-    git stash pop || echo "Nada para aplicar do stash" &&
-    git add ${dataFilePath} &&
     git commit -m "Atualizando repertório via API" &&
     git push https://${GITHUB_TOKEN}@github.com/CaioBarretoo/repertorio-api.git main
     `,
