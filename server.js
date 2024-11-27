@@ -52,15 +52,37 @@ const salvarDados = () => {
         (initError, stdout, stderr) => {
           if (initError) {
             console.error(`Erro ao inicializar o repositório Git: ${initError.message}`);
-          } else {
-            console.log('Repositório Git inicializado e remoto configurado com sucesso!');
-            realizarPush(); // Realizar o push após configurar o Git
+            return;
           }
+          console.log('Repositório Git inicializado e remoto configurado com sucesso!');
+          realizarPush(); // Realizar o push após configurar o Git
         }
       );
     } else {
       console.log('Repositório Git já inicializado.');
-      realizarPush(); // Realizar o push diretamente
+      exec('git remote -v', (remotesError, remotesStdout) => {
+        if (remotesError) {
+          console.error('Erro ao verificar remotos Git:', remotesError);
+          return;
+        }
+        // Verificar se o repositório remoto 'origin' está configurado corretamente
+        if (!remotesStdout.includes('origin')) {
+          console.log('Repositório remoto "origin" não encontrado. Configurando...');
+          exec(
+            `git remote add origin https://github.com/CaioBarretoo/repertorio-api.git`,
+            (addRemoteError, addRemoteStdout, addRemoteStderr) => {
+              if (addRemoteError) {
+                console.error('Erro ao adicionar o repositório remoto:', addRemoteError);
+                return;
+              }
+              console.log('Repositório remoto "origin" configurado com sucesso!');
+              realizarPush(); // Realizar o push após configurar o remoto
+            }
+          );
+        } else {
+          realizarPush(); // O repositório remoto já está configurado, então faz o push
+        }
+      });
     }
   });
 };
