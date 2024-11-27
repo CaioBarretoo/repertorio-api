@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "music": "ABRA OS OLHOS DO MEU CORAÇÃO",
+    "youtube": "https://www.youtube.com/watch?v=0UWvytsDEng",
+    "cifra": "https://www.cifraclub.com.br/david-quinlan/abra-os-olhos-do-meu-coracao/"
+  },
+  {
+    "id": 2,
+    "music": "ABRAÇA-ME",
+    "youtube": "https://www.youtube.com/watch?v=com5UB-SWYY",
+    "cifra": "https://www.cifraclub.com.br/david-quinlan/abraca-me/"
+  },
+  {
+    "id": 3,
+    "music": "A BOA PARTE",
+    "youtube": "https://www.youtube.com/watch?v=dlGOiuxSzVw",
+    "cifra": "https://www.cifraclub.com.br/florianopolis-house-of-prayer/a-boa-parte/"
+  },
+  {
+    "id": 4,
+    "music": "ACLAME AO SENHOR",
+    "youtube": "https://www.youtube.com/watch?v=eXYe0dakxLY",
+    "cifra": "https://www.cifraclub.com.br/diante-do-trono/aclame-ao-senhor/"
+  },
+  {
+    "id": 5,
+    "music": "ACREDITO",
+    "youtube": "https://youtu.be/9i9wtJzok4U",
+    "cifra": "https://www.cifraclub.com.br/newsboys/we-believe"
+  }
+]
