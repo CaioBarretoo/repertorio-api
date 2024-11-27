@@ -4,7 +4,11 @@ const bodyParser = require('body-parser');
 const repertorioRoutes = require('./routes/repertorioRoutes');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Porta do Render
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
+});
+
 
 // Middlewares
 app.use(cors());
