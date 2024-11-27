@@ -22,7 +22,7 @@ jobs:
       - name: Commit and push changes
         run: |
           git add repertorio.json
-          git commit -m "Atualizando repertório"
+          git commit -m "Atualizando repertório" || echo "No changes to commit"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
