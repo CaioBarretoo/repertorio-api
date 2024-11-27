@@ -47,7 +47,7 @@ const salvarDados = () => {
         git init &&
         git config user.name "CaioBarretoo" &&
         git config user.email "caio.barret@hotmail.com" &&
-        git remote add origin https://${GITHUB_TOKEN}@github.com/CaioBarretoo/repertorio-api.git
+        git remote add origin https://github.com/CaioBarretoo/repertorio-api.git
         `,
         (initError, stdout, stderr) => {
           if (initError) {
