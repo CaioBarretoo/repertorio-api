@@ -89,6 +89,9 @@ const salvarDados = () => {
 
 // Função para realizar o commit e push no repositório Git
 const realizarPush = () => {
+  // Atualizar a URL com o token de autenticação
+  const remoteUrl = `https://${GITHUB_TOKEN}@github.com/CaioBarretoo/repertorio-api.git`;
+
   exec(
     `
     git config user.name "CaioBarretoo" &&
@@ -96,7 +99,7 @@ const realizarPush = () => {
     git add ${dataFilePath} && 
     git status &&  // Verificando o status do git
     git commit -m "Atualizando repertório via API" &&
-    git push https://${GITHUB_TOKEN}@github.com/CaioBarretoo/repertorio-api.git main
+    git push ${remoteUrl} main
     `,
     (error, stdout, stderr) => {
       if (error) {
