@@ -2,8 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const morgan = require('morgan'); // Importando Morgan
-const cron = require('node-cron'); // Importando o pacote node-cron
-const axios = require('axios'); // Para fazer requisição HTTP
 const repertorioRoutes = require('./routes/repertorioRoutes');
 
 const app = express();
@@ -37,16 +35,6 @@ app.get('/', (req, res) => {
 app.use((err, req, res, next) => {
   console.error('Erro:', err.message);
   res.status(500).json({ error: 'Erro interno do servidor.' });
-});
-
-// Cron job para fazer GET a cada 14 minutos
-cron.schedule('*/14 * * * *', async () => {
-  try {
-    const response = await axios.get('https://sua-api.com/'); // Substitua pela URL real da sua API
-    console.log(`[${new Date().toISOString()}] Requisição GET feita com sucesso! Status: ${response.status}`);
-  } catch (error) {
-    console.error(`[${new Date().toISOString()}] Erro ao fazer GET:`, error.message);
-  }
 });
 
 // Iniciar o servidor
