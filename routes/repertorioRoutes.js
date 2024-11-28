@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../database/db'); // Conexão com o banco de dados SQLite
+const db = require('../database/database');
 
 // Rota para listar todas as músicas
 router.get('/', async (req, res) => {
