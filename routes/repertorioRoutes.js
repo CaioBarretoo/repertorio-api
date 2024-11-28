@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../database/firebase');
+const db = require('../firebase');
 
 // Rota para listar todas as músicas
 router.get('/', async (req, res) => {
