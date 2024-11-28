@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const db = require('../database/firebase');
 
-// Rota para listar todas as músicas
+// Rota para listar todas as músicas, ordenadas pelo campo `id`
 router.get('/', async (req, res) => {
   try {
-    const snapshot = await db.collection('repertorio').get();
+    const snapshot = await db.collection('repertorio').orderBy('id', 'asc').get(); // Ordena pelo campo `id` em ordem ascendente
     const musicas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     res.status(200).json(musicas);
   } catch (err) {
