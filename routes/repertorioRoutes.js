@@ -68,6 +68,39 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Rota para atualizar uma música pelo ID
+router.patch('/:id', async (req, res) => {
+  try {
+    const { id } = req.params; // Obtém o parâmetro ':id' da URL
+    const { music, youtube, cifra } = req.body; // Obtém os dados do corpo da requisição
+
+    if (!music && !youtube && !cifra) {
+      return res.status(400).json({ error: 'Pelo menos um campo (music, youtube ou cifra) deve ser fornecido para atualização.' });
+    }
+
+    // Busca a música no Firestore usando o campo "id"
+    const querySnapshot = await db
+      .collection('repertorio')
+      .where('id', '==', parseInt(id)) // Converte o ID para número
+      .get();
+
+    // Verifica se o documento foi encontrado
+    if (querySnapshot.empty) {
+      return res.status(404).json({ error: 'Música não encontrada.' });
+    }
+
+    // Atualiza a música encontrada (primeiro documento)
+    const docRef = querySnapshot.docs[0].ref; // Obtém a referência do documento
+    await docRef.update({ music, youtube, cifra }); // Atualiza apenas os campos fornecidos
+
+    res.status(200).json({ message: 'Música atualizada com sucesso.' });
+  } catch (err) {
+    console.error('Erro ao atualizar música:', err.message);
+    res.status(500).json({ error: 'Erro ao atualizar música.' });
+  }
+});
+
+
 // Rota para remover uma música pelo ID
 router.delete('/:id', async (req, res) => {
   try {
