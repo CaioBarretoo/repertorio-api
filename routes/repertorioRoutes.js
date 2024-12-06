@@ -2,35 +2,40 @@ const express = require('express');
 const router = express.Router();
 const db = require('../database/firebase');
 
-// Rota para listar todas as músicas ou buscar por um ID específico
-// Rota para listar todas as músicas ou buscar por um ID específico
+// Rota para listar todas as músicas
 router.get('/', async (req, res) => {
   try {
-    const { id } = req.query; // Obtém o parâmetro de consulta 'id'
-
-    if (id) {
-      // Caso um ID seja passado, busca o documento pelo campo "id"
-      const querySnapshot = await db
-        .collection('repertorio')
-        .where('id', '==', parseInt(id)) // Converte o 'id' para número
-        .get();
-
-      if (querySnapshot.empty) {
-        return res.status(404).json({ error: 'Música não encontrada.' });
-      }
-
-      // Pega o primeiro documento encontrado
-      const musicas = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      return res.status(200).json(musicas[0]); // Retorna apenas a primeira música
-    } else {
-      // Caso contrário, lista todas as músicas
-      const snapshot = await db.collection('repertorio').orderBy('id', 'asc').get();
-      const musicas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      return res.status(200).json(musicas);
-    }
+    const snapshot = await db.collection('repertorio').orderBy('id', 'asc').get();
+    const musicas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    res.status(200).json(musicas);
   } catch (err) {
-    console.error('Erro ao buscar músicas:', err.message);
-    res.status(500).json({ error: 'Erro ao buscar músicas.' });
+    console.error('Erro ao listar músicas:', err.message);
+    res.status(500).json({ error: 'Erro ao listar músicas.' });
+  }
+});
+
+// Rota para buscar uma música pelo campo "id"
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params; // Obtém o parâmetro ':id' da URL
+
+    // Busca no Firestore pelo campo "id"
+    const querySnapshot = await db
+      .collection('repertorio')
+      .where('id', '==', parseInt(id)) // Converte o ID para número
+      .get();
+
+    // Verifica se o documento foi encontrado
+    if (querySnapshot.empty) {
+      return res.status(404).json({ error: 'Música não encontrada.' });
+    }
+
+    // Retorna a música encontrada (primeiro documento)
+    const musicas = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    res.status(200).json(musicas[0]);
+  } catch (err) {
+    console.error('Erro ao buscar música:', err.message);
+    res.status(500).json({ error: 'Erro ao buscar música.' });
   }
 });
 
