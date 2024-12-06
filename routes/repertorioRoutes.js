@@ -3,20 +3,25 @@ const router = express.Router();
 const db = require('../database/firebase');
 
 // Rota para listar todas as músicas ou buscar por um ID específico
+// Rota para listar todas as músicas ou buscar por um ID específico
 router.get('/', async (req, res) => {
   try {
     const { id } = req.query; // Obtém o parâmetro de consulta 'id'
 
     if (id) {
-      // Caso um ID seja passado, busca o documento correspondente
-      const docRef = db.collection('repertorio').doc(id);
-      const doc = await docRef.get();
+      // Caso um ID seja passado, busca o documento pelo campo "id"
+      const querySnapshot = await db
+        .collection('repertorio')
+        .where('id', '==', parseInt(id)) // Converte o 'id' para número
+        .get();
 
-      if (!doc.exists) {
+      if (querySnapshot.empty) {
         return res.status(404).json({ error: 'Música não encontrada.' });
       }
 
-      return res.status(200).json({ id: doc.id, ...doc.data() });
+      // Pega o primeiro documento encontrado
+      const musicas = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return res.status(200).json(musicas[0]); // Retorna apenas a primeira música
     } else {
       // Caso contrário, lista todas as músicas
       const snapshot = await db.collection('repertorio').orderBy('id', 'asc').get();
@@ -28,6 +33,7 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar músicas.' });
   }
 });
+
 
 
 // Rota para adicionar várias músicas
