@@ -60,21 +60,33 @@ router.post('/', async (req, res) => {
 // Rota para remover uma música pelo ID
 router.delete('/:id', async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params; // Captura o ID da URL
 
-    const docRef = db.collection('repertorio').doc(id);
-    const doc = await docRef.get();
+    // Consulta documentos onde o campo `id` é igual ao parâmetro fornecido
+    const querySnapshot = await db
+      .collection('repertorio')
+      .where('id', '==', parseInt(id)) // Converte o `id` para número, já que o dado no Firestore é numérico
+      .get();
 
-    if (!doc.exists) {
+    // Se nenhum documento for encontrado, retorna erro
+    if (querySnapshot.empty) {
       return res.status(404).json({ error: 'Música não encontrada.' });
     }
 
-    await docRef.delete();
+    // Exclui todos os documentos encontrados (mesmo que seja um único documento)
+    const batch = db.batch(); // Usa batch para exclusão
+    querySnapshot.forEach((doc) => {
+      batch.delete(doc.ref); // Adiciona exclusão de cada documento ao batch
+    });
+
+    await batch.commit(); // Executa o batch para excluir os documentos
+
     res.status(200).json({ message: 'Música removida com sucesso.' });
   } catch (err) {
     console.error('Erro ao excluir música:', err.message);
     res.status(500).json({ error: 'Erro ao excluir música.' });
   }
 });
+
 
 module.exports = router;
