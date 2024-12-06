@@ -5,7 +5,7 @@ const db = require('../database/firebase');
 // Rota para listar todas as músicas
 router.get('/', async (req, res) => {
   try {
-    const snapshot = await db.collection('repertorio').orderBy('id', 'asc').get();
+    const snapshot = await db.collection('repertoire').orderBy('id', 'asc').get();
     const musicas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     res.status(200).json(musicas);
   } catch (err) {
@@ -21,7 +21,7 @@ router.get('/:id', async (req, res) => {
 
     // Busca no Firestore pelo campo "id"
     const querySnapshot = await db
-      .collection('repertorio')
+      .collection('repertoire')
       .where('id', '==', parseInt(id)) // Converte o ID para número
       .get();
 
@@ -56,7 +56,7 @@ router.post('/', async (req, res) => {
       if (!musica.music || !musica.youtube || !musica.cifra) {
         throw new Error('Todos os campos (music, youtube, cifra) são obrigatórios.');
       }
-      const docRef = db.collection('repertorio').doc();
+      const docRef = db.collection('repertoire').doc();
       batch.set(docRef, musica);
     });
 
@@ -80,7 +80,7 @@ router.patch('/:id', async (req, res) => {
 
     // Busca a música no Firestore usando o campo "id"
     const querySnapshot = await db
-      .collection('repertorio')
+      .collection('repertoire')
       .where('id', '==', parseInt(id)) // Converte o ID para número
       .get();
 
@@ -108,7 +108,7 @@ router.delete('/:id', async (req, res) => {
 
     // Consulta documentos onde o campo `id` é igual ao parâmetro fornecido
     const querySnapshot = await db
-      .collection('repertorio')
+      .collection('repertoire')
       .where('id', '==', parseInt(id)) // Converte o `id` para número, já que o dado no Firestore é numérico
       .get();
 
